@@ -10,6 +10,80 @@
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800&display=swap" rel="stylesheet">
         <style>
+            :root {
+                color-scheme: light;
+
+                --bg-base: #fffaf3;
+                --glow-1: #ffe7b0;
+                --glow-2: #d4efff;
+                --glow-3: #ffd9e6;
+                --glow-4: #d8f6e4;
+
+                --ink: #3e4a5a;
+                --heading: #35506a;
+                --muted: #8a96a6;
+                --day-ink: #4a5b6e;
+                --subject-ink: #2f4256;
+                --room-ink: #8b97a6;
+                --teacher-ink: #9aa3b0;
+
+                --surface: #fff;
+                --head-surface: #f8fbfe;
+                --card-border: #f3eadc;
+                --grid-line: #f1e8db;
+                --grid-line-soft: #f6f0e8;
+
+                --shadow-sheet: rgba(90, 70, 40, 0.08);
+                --shadow-drawer: rgba(90, 70, 40, 0.05);
+                --shadow-drawer-now: rgba(90, 70, 40, 0.08);
+                --shadow-drawer-mobile: rgba(90, 70, 40, 0.06);
+                --shadow-card: rgba(90, 70, 40, 0.07);
+                --shadow-pop: rgba(90, 70, 40, 0.14);
+                --shadow-accent: rgba(122, 84, 16, 0.22);
+                --shadow-end: rgba(180, 40, 40, 0.16);
+
+                --accent-bg: #ffe08a;
+                --accent-ink: #7a5410;
+                --chip-active-bg: #fff3cc;
+
+                --p1-bg: #e7f4fc;
+                --p1-ink: #2f7eae;
+                --p2-bg: #d9f6e6;
+                --p2-ink: #2f8a62;
+                --p3-bg: #ffe4d6;
+                --p3-ink: #c46a45;
+                --p4-bg: #f3efe8;
+                --p4-ink: #8a7b68;
+                --p5-bg: #ece4ff;
+                --p5-ink: #6d5bd0;
+                --p6-bg: #fff1c2;
+                --p6-ink: #a07812;
+
+                --drawer-ink: #8a7968;
+                --drawer-muted: #b0a494;
+
+                --now-track: #fff6e0;
+                --now-fill: #f7e4bc;
+                --now-line: #f0c14b;
+                --now-ink: #7a5410;
+                --now-muted: #a07812;
+
+                --end-track: #fde8e6;
+                --end-fill: #f7d8d4;
+                --end-line: #e24b4b;
+                --end-ink: #9b1c1c;
+                --end-muted: #c23636;
+
+                --lunch-bg: #fbfaf8;
+                --lunch-ink: #8d8378;
+
+                --today-bg: #fffaf2;
+                --today-day-ink: #3d5470;
+                --today-rail: #f0b429;
+                --cell-now-fill: #fff0c2;
+                --cell-now-line: #e6d3a8;
+            }
+
             * {
                 box-sizing: border-box;
             }
@@ -18,14 +92,14 @@
                 margin: 0;
                 min-height: 100vh;
                 padding: 28px 20px 40px;
-                color: #3e4a5a;
+                color: var(--ink);
                 font-family: "Nunito", "Trebuchet MS", "Segoe UI", sans-serif;
                 background:
-                    radial-gradient(circle at 8% 10%, #ffe7b0 0, transparent 26%),
-                    radial-gradient(circle at 94% 6%, #d4efff 0, transparent 24%),
-                    radial-gradient(circle at 90% 92%, #ffd9e6 0, transparent 22%),
-                    radial-gradient(circle at 6% 90%, #d8f6e4 0, transparent 20%),
-                    #fffaf3;
+                    radial-gradient(circle at 8% 10%, var(--glow-1) 0, transparent 26%),
+                    radial-gradient(circle at 94% 6%, var(--glow-2) 0, transparent 24%),
+                    radial-gradient(circle at 90% 92%, var(--glow-3) 0, transparent 22%),
+                    radial-gradient(circle at 6% 90%, var(--glow-4) 0, transparent 20%),
+                    var(--bg-base);
             }
 
             .board {
@@ -43,15 +117,15 @@
             .badge {
                 padding: 5px 12px;
                 border-radius: 999px;
-                background: #ffe08a;
-                color: #7a5410;
+                background: var(--accent-bg);
+                color: var(--accent-ink);
                 font-size: 13px;
                 font-weight: 800;
             }
 
             h1 {
                 margin: 0;
-                color: #35506a;
+                color: var(--heading);
                 font-size: 28px;
                 font-weight: 800;
                 letter-spacing: -0.02em;
@@ -68,10 +142,10 @@
                 flex: 1 1 auto;
                 min-width: 0;
                 overflow: hidden;
-                border: 1px solid #f3eadc;
+                border: 1px solid var(--card-border);
                 border-radius: 22px;
-                background: #fff;
-                box-shadow: 0 18px 40px rgba(90, 70, 40, 0.08);
+                background: var(--surface);
+                box-shadow: 0 18px 40px var(--shadow-sheet);
             }
 
             .drawer {
@@ -86,32 +160,32 @@
                 --drawer-tuck: 36px;
                 margin: var(--schedule-header, 72px) 0 0 -36px;
                 padding: 28px 18px 28px 52px;
-                border: 1px solid #f3eadc;
+                border: 1px solid var(--card-border);
                 border-left: 0;
                 border-radius: 0 22px 22px 0;
-                background: #fff;
-                box-shadow: 10px 0 18px rgba(90, 70, 40, 0.05);
-                color: #8a7968;
+                background: var(--surface);
+                box-shadow: 10px 0 18px var(--shadow-drawer);
+                color: var(--drawer-ink);
                 opacity: 0.72;
             }
 
             .drawer.is-now {
                 background: linear-gradient(
                     to right,
-                    #fff6e0 var(--drawer-tuck),
-                    #f7e4bc var(--drawer-tuck),
-                    #f7e4bc calc(var(--drawer-tuck) + (100% - var(--drawer-tuck)) * var(--progress-ratio, 0)),
-                    #fff6e0 calc(var(--drawer-tuck) + (100% - var(--drawer-tuck)) * var(--progress-ratio, 0))
+                    var(--now-track) var(--drawer-tuck),
+                    var(--now-fill) var(--drawer-tuck),
+                    var(--now-fill) calc(var(--drawer-tuck) + (100% - var(--drawer-tuck)) * var(--progress-ratio, 0)),
+                    var(--now-track) calc(var(--drawer-tuck) + (100% - var(--drawer-tuck)) * var(--progress-ratio, 0))
                 );
-                border-color: #f0c14b;
+                border-color: var(--now-line);
                 border-left-color: transparent;
-                color: #7a5410;
+                color: var(--now-ink);
                 opacity: 1;
                 box-shadow:
-                    inset 0 2px 0 #f0c14b,
-                    inset -2px 0 0 #f0c14b,
-                    inset 0 -2px 0 #f0c14b,
-                    10px 0 18px rgba(90, 70, 40, 0.08);
+                    inset 0 2px 0 var(--now-line),
+                    inset -2px 0 0 var(--now-line),
+                    inset 0 -2px 0 var(--now-line),
+                    10px 0 18px var(--shadow-drawer-now);
             }
 
             .drawer-handle {
@@ -123,7 +197,7 @@
                 height: 42px;
                 transform: translateY(-50%);
                 border-radius: 999px;
-                background: #f0c14b;
+                background: var(--now-line);
             }
 
             .drawer.is-now .drawer-handle {
@@ -140,7 +214,7 @@
 
             .drawer-time {
                 writing-mode: vertical-rl;
-                color: #b0a494;
+                color: var(--drawer-muted);
                 font-size: 13px;
                 font-weight: 700;
             }
@@ -148,27 +222,27 @@
             .drawer.is-now.is-ending {
                 background: linear-gradient(
                     to right,
-                    #fde8e6 var(--drawer-tuck),
-                    #f7d8d4 var(--drawer-tuck),
-                    #f7d8d4 calc(var(--drawer-tuck) + (100% - var(--drawer-tuck)) * var(--progress-ratio, 0)),
-                    #fde8e6 calc(var(--drawer-tuck) + (100% - var(--drawer-tuck)) * var(--progress-ratio, 0))
+                    var(--end-track) var(--drawer-tuck),
+                    var(--end-fill) var(--drawer-tuck),
+                    var(--end-fill) calc(var(--drawer-tuck) + (100% - var(--drawer-tuck)) * var(--progress-ratio, 0)),
+                    var(--end-track) calc(var(--drawer-tuck) + (100% - var(--drawer-tuck)) * var(--progress-ratio, 0))
                 );
-                border-color: #e24b4b;
+                border-color: var(--end-line);
                 border-left-color: transparent;
-                color: #9b1c1c;
+                color: var(--end-ink);
                 box-shadow:
-                    inset 0 2px 0 #e24b4b,
-                    inset -2px 0 0 #e24b4b,
-                    inset 0 -2px 0 #e24b4b,
-                    10px 0 18px rgba(180, 40, 40, 0.16);
+                    inset 0 2px 0 var(--end-line),
+                    inset -2px 0 0 var(--end-line),
+                    inset 0 -2px 0 var(--end-line),
+                    10px 0 18px var(--shadow-end);
             }
 
             .drawer.is-now.is-ending .drawer-handle {
-                background: #e24b4b;
+                background: var(--end-line);
             }
 
             .drawer.is-now.is-ending .drawer-time {
-                color: #c23636;
+                color: var(--end-muted);
             }
 
             @keyframes drawer-alert {
@@ -185,13 +259,13 @@
 
             .timetable th,
             .timetable td {
-                border: 1px solid #f1e8db;
+                border: 1px solid var(--grid-line);
                 padding: 0;
-                background: #fff;
+                background: var(--surface);
             }
 
             thead th {
-                background: #f8fbfe;
+                background: var(--head-surface);
             }
 
             .day-column {
@@ -215,47 +289,47 @@
                 width: 34px;
                 height: 34px;
                 border-radius: 50%;
-                background: #e7f4fc;
-                color: #2f7eae;
+                background: var(--p1-bg);
+                color: var(--p1-ink);
                 font-size: 18px;
                 font-weight: 800;
                 line-height: 1;
             }
 
             thead th:nth-child(3) .period {
-                background: #d9f6e6;
-                color: #2f8a62;
+                background: var(--p2-bg);
+                color: var(--p2-ink);
             }
 
             thead th:nth-child(4) .period {
-                background: #ffe4d6;
-                color: #c46a45;
+                background: var(--p3-bg);
+                color: var(--p3-ink);
             }
 
             thead th:nth-child(5) .period {
-                background: #f3efe8;
-                color: #8a7b68;
+                background: var(--p4-bg);
+                color: var(--p4-ink);
             }
 
             thead th:nth-child(6) .period {
-                background: #ece4ff;
-                color: #6d5bd0;
+                background: var(--p5-bg);
+                color: var(--p5-ink);
             }
 
             thead th:nth-child(7) .period {
-                background: #fff1c2;
-                color: #a07812;
+                background: var(--p6-bg);
+                color: var(--p6-ink);
             }
 
             .time {
-                color: #8a96a6;
+                color: var(--muted);
                 font-size: 13px;
                 font-weight: 700;
                 line-height: 1.2;
             }
 
             .day {
-                color: #4a5b6e;
+                color: var(--day-ink);
                 font-size: 16px;
                 font-weight: 700;
                 text-align: center;
@@ -298,13 +372,13 @@
             }
 
             .half + .half {
-                border-top: 1px solid #f1e8db;
+                border-top: 1px solid var(--grid-line);
             }
 
             .room {
                 align-self: start;
                 justify-self: start;
-                color: #8b97a6;
+                color: var(--room-ink);
                 font-size: 12px;
                 font-weight: 800;
                 line-height: 1.2;
@@ -313,7 +387,7 @@
             .subject {
                 align-self: center;
                 justify-self: center;
-                color: #2f4256;
+                color: var(--subject-ink);
                 font-size: 17px;
                 font-weight: 800;
                 line-height: 1.15;
@@ -323,7 +397,7 @@
             .teacher {
                 align-self: end;
                 justify-self: end;
-                color: #9aa3b0;
+                color: var(--teacher-ink);
                 font-size: 12px;
                 font-weight: 700;
                 line-height: 1.2;
@@ -331,8 +405,8 @@
             }
 
             .timetable td.lunch {
-                background: #fbfaf8;
-                color: #8d8378;
+                background: var(--lunch-bg);
+                color: var(--lunch-ink);
                 font-size: 17px;
                 font-weight: 800;
                 text-align: center;
@@ -341,22 +415,22 @@
 
             tr.is-today > .day,
             tr.is-today > td {
-                background: #fffaf2;
+                background: var(--today-bg);
             }
 
             tr.is-today > .day {
-                color: #3d5470;
+                color: var(--today-day-ink);
                 font-weight: 800;
-                box-shadow: inset 5px 0 0 #f0b429;
+                box-shadow: inset 5px 0 0 var(--today-rail);
             }
 
             tr.is-today > td.is-now {
                 background: linear-gradient(
                     to right,
-                    #fff0c2 var(--progress, 0%),
-                    #fffaf2 var(--progress, 0%)
+                    var(--cell-now-fill) var(--progress, 0%),
+                    var(--today-bg) var(--progress, 0%)
                 );
-                box-shadow: inset 0 0 0 1px #e6d3a8;
+                box-shadow: inset 0 0 0 1px var(--cell-now-line);
             }
 
             .timetable td.span-clone {
@@ -408,10 +482,10 @@
                     min-height: 0;
                     margin: -22px 18px 12px;
                     padding: 28px 12px 12px;
-                    border: 1px solid #f3eadc;
+                    border: 1px solid var(--card-border);
                     border-top: 0;
                     border-radius: 0 0 14px 14px;
-                    box-shadow: 0 8px 16px rgba(90, 70, 40, 0.06);
+                    box-shadow: 0 8px 16px var(--shadow-drawer-mobile);
                 }
 
                 .drawer-title,
@@ -436,17 +510,17 @@
                     padding-top: 28px;
                     background: linear-gradient(
                         to right,
-                        #f7e4bc var(--progress, 0%),
-                        #fff6e0 var(--progress, 0%)
+                        var(--now-fill) var(--progress, 0%),
+                        var(--now-track) var(--progress, 0%)
                     );
-                    border-color: #f0c14b;
+                    border-color: var(--now-line);
                     border-top-color: transparent;
-                    color: #7a5410;
+                    color: var(--now-ink);
                     opacity: 1;
                     box-shadow:
-                        inset 2px 0 0 #f0c14b,
-                        inset -2px 0 0 #f0c14b,
-                        inset 0 -2px 0 #f0c14b;
+                        inset 2px 0 0 var(--now-line),
+                        inset -2px 0 0 var(--now-line),
+                        inset 0 -2px 0 var(--now-line);
                 }
 
                 .drawer.is-now .drawer-handle {
@@ -460,26 +534,26 @@
                 }
 
                 .drawer.is-now .drawer-time {
-                    color: #a07812;
+                    color: var(--now-muted);
                 }
 
                 .drawer.is-now.is-ending {
                     background: linear-gradient(
                         to right,
-                        #f7d8d4 var(--progress, 0%),
-                        #fde8e6 var(--progress, 0%)
+                        var(--end-fill) var(--progress, 0%),
+                        var(--end-track) var(--progress, 0%)
                     );
-                    border-color: #e24b4b;
+                    border-color: var(--end-line);
                     border-top-color: transparent;
-                    color: #9b1c1c;
+                    color: var(--end-ink);
                     box-shadow:
-                        inset 2px 0 0 #e24b4b,
-                        inset -2px 0 0 #e24b4b,
-                        inset 0 -2px 0 #e24b4b;
+                        inset 2px 0 0 var(--end-line),
+                        inset -2px 0 0 var(--end-line),
+                        inset 0 -2px 0 var(--end-line);
                 }
 
                 .drawer.is-now.is-ending .drawer-handle {
-                    background: #e24b4b;
+                    background: var(--end-line);
                 }
 
                 .drawer-title,
@@ -513,16 +587,16 @@
                     height: auto;
                     margin: 0 0 14px;
                     overflow: hidden;
-                    border: 1px solid #f3eadc;
+                    border: 1px solid var(--card-border);
                     border-radius: 18px;
-                    background: #fff;
-                    box-shadow: 0 10px 24px rgba(90, 70, 40, 0.07);
+                    background: var(--surface);
+                    box-shadow: 0 10px 24px var(--shadow-card);
                 }
 
                 .timetable th,
                 .timetable td {
                     border: 0;
-                    border-bottom: 1px solid #f6f0e8;
+                    border-bottom: 1px solid var(--grid-line-soft);
                 }
 
                 .timetable td:last-child {
@@ -533,7 +607,7 @@
                     padding: 14px 16px 14px 18px;
                     font-size: 18px;
                     text-align: left;
-                    background: #fff;
+                    background: var(--surface);
                 }
 
                 .timetable td {
@@ -553,42 +627,42 @@
                     height: 36px;
                     transform: translateY(-50%);
                     border-radius: 50%;
-                    background: #e7f4fc;
-                    color: #2f7eae;
+                    background: var(--p1-bg);
+                    color: var(--p1-ink);
                     font-size: 16px;
                     font-weight: 800;
                 }
 
                 .timetable td[data-slot="2"]::before {
-                    background: #d9f6e6;
-                    color: #2f8a62;
+                    background: var(--p2-bg);
+                    color: var(--p2-ink);
                 }
 
                 .timetable td[data-slot="3"]::before {
-                    background: #ffe4d6;
-                    color: #c46a45;
+                    background: var(--p3-bg);
+                    color: var(--p3-ink);
                 }
 
                 .timetable td[data-slot="4"]::before {
-                    background: #f3efe8;
-                    color: #8a7b68;
+                    background: var(--p4-bg);
+                    color: var(--p4-ink);
                 }
 
                 .timetable td[data-slot="5"]::before {
-                    background: #ece4ff;
-                    color: #6d5bd0;
+                    background: var(--p5-bg);
+                    color: var(--p5-ink);
                 }
 
                 .timetable td[data-slot="6"]::before {
-                    background: #fff1c2;
-                    color: #a07812;
+                    background: var(--p6-bg);
+                    color: var(--p6-ink);
                 }
 
                 .timetable td::after {
                     content: attr(data-time);
                     display: block;
                     margin-top: 3px;
-                    color: #8a96a6;
+                    color: var(--muted);
                     font-size: 12px;
                     font-weight: 700;
                 }
@@ -622,7 +696,7 @@
                 }
 
                 .half + .half {
-                    border-top: 1px solid #f1e8db;
+                    border-top: 1px solid var(--grid-line);
                     padding-top: 8px;
                 }
 
@@ -651,27 +725,27 @@
                 }
 
                 .timetable td.lunch {
-                    color: #8d8378;
+                    color: var(--lunch-ink);
                     font-size: 16px;
                     text-align: left;
                 }
 
                 tr.is-today > .day,
                 tr.is-today > td {
-                    background: #fffaf2;
+                    background: var(--today-bg);
                 }
 
                 tr.is-today > .day {
-                    box-shadow: inset 5px 0 0 #f0b429;
+                    box-shadow: inset 5px 0 0 var(--today-rail);
                 }
 
                 tr.is-today > td.is-now {
                     background: linear-gradient(
                         to right,
-                        #fff0c2 var(--progress, 0%),
-                        #fffaf2 var(--progress, 0%)
+                        var(--cell-now-fill) var(--progress, 0%),
+                        var(--today-bg) var(--progress, 0%)
                     );
-                    box-shadow: inset 3px 0 0 #e6d3a8;
+                    box-shadow: inset 3px 0 0 var(--cell-now-line);
                 }
             }
 
@@ -688,6 +762,7 @@
 
             .time-lab.is-visible {
                 display: flex;
+                bottom: 64px;
             }
 
             .time-lab-panel {
@@ -696,10 +771,10 @@
                 max-height: min(70vh, 540px);
                 padding: 8px;
                 overflow: auto;
-                border: 1px solid #f3eadc;
+                border: 1px solid var(--card-border);
                 border-radius: 18px;
-                background: #fff;
-                box-shadow: 0 14px 32px rgba(90, 70, 40, 0.14);
+                background: var(--surface);
+                box-shadow: 0 14px 32px var(--shadow-pop);
             }
 
             .time-lab.is-open .time-lab-panel {
@@ -728,26 +803,66 @@
 
             .time-lab-panel button {
                 padding: 8px 12px;
-                background: #f8fbfe;
-                color: #35506a;
+                background: var(--head-surface);
+                color: var(--heading);
                 font-size: 14px;
                 text-align: left;
             }
 
             .time-lab-panel button.is-selected {
-                background: #fff3cc;
-                color: #7a5410;
+                background: var(--chip-active-bg);
+                color: var(--accent-ink);
             }
 
             .time-lab-toggle {
                 min-width: 72px;
                 padding: 14px 18px;
-                background: #ffe08a;
-                color: #7a5410;
+                background: var(--accent-bg);
+                color: var(--accent-ink);
                 font-size: 15px;
-                box-shadow: 0 10px 24px rgba(122, 84, 16, 0.22);
+                box-shadow: 0 10px 24px var(--shadow-accent);
+            }
+
+            .theme-toggle {
+                position: fixed;
+                right: 20px;
+                bottom: 20px;
+                z-index: 5;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                width: 32px;
+                height: 32px;
+                padding: 0;
+                border: 0;
+                border-radius: 50%;
+                background: var(--accent-bg);
+                color: var(--accent-ink);
+                box-shadow: 0 6px 14px var(--shadow-accent);
+                cursor: pointer;
+            }
+
+            .theme-toggle svg {
+                width: 18px;
+                height: 18px;
+                display: block;
+            }
+
+            .theme-toggle .icon-moon {
+                display: none;
             }
         </style>
+        <link rel="stylesheet" href="dark.css">
+        <script>
+            // Runs before first paint so a saved dark theme never flashes white.
+            (() => {
+                const cookie = document.cookie.split("; ").find((entry) => entry.startsWith("theme="));
+                const stored = cookie ? cookie.slice(6) : localStorage.getItem("theme");
+                if (stored === "dark") {
+                    document.documentElement.classList.add("dark");
+                }
+            })();
+        </script>
     </head>
     <body>
         <main class="board">
@@ -1021,6 +1136,15 @@
             </aside>
             </div>
         </main>
+        <button type="button" class="theme-toggle" aria-pressed="false" aria-label="Ieslēgt tumšo režīmu">
+            <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true">
+                <circle cx="12" cy="12" r="4.2"></circle>
+                <path d="M12 2.4v2.4M12 19.2v2.4M4.2 12H1.8M22.2 12h-2.4M6.5 6.5 4.8 4.8M19.2 19.2l-1.7-1.7M17.5 6.5l1.7-1.7M4.8 19.2l1.7-1.7"></path>
+            </svg>
+            <svg class="icon-moon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M20.3 14.6A8.6 8.6 0 0 1 9.4 3.7a8.6 8.6 0 1 0 10.9 10.9z"></path>
+            </svg>
+        </button>
         <div class="time-lab">
             <div class="time-lab-panel">
                 <button type="button" data-reset>Tagad</button>
@@ -1323,6 +1447,31 @@
             });
 
             renderPreviewControls();
+
+            const themeToggle = document.querySelector(".theme-toggle");
+
+            const storeTheme = (theme) => {
+                document.cookie = `theme=${theme}; path=/; max-age=31536000; SameSite=Lax`;
+                // Browsers drop cookies on file:// pages, so mirror the choice locally.
+                try {
+                    localStorage.setItem("theme", theme);
+                } catch {
+                    // Private mode can block storage; the theme then lasts for this page view only.
+                }
+            };
+
+            const renderThemeToggle = (isDark) => {
+                themeToggle.setAttribute("aria-pressed", String(isDark));
+                themeToggle.setAttribute("aria-label", isDark ? "Ieslēgt gaišo režīmu" : "Ieslēgt tumšo režīmu");
+            };
+
+            renderThemeToggle(document.documentElement.classList.contains("dark"));
+
+            themeToggle.addEventListener("click", () => {
+                const isDark = document.documentElement.classList.toggle("dark");
+                storeTheme(isDark ? "dark" : "light");
+                renderThemeToggle(isDark);
+            });
         </script>
     </body>
 </html>

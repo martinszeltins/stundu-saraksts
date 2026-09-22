@@ -1,0 +1,88 @@
+/* Dark theme. Activated by the `dark` class on <html>; light mode lives in index.html. */
+
+html.dark {
+    color-scheme: dark;
+
+    --bg-base: #15120f;
+    --glow-1: #3d3015;
+    --glow-2: #14303f;
+    --glow-3: #3d1d2b;
+    --glow-4: #143524;
+
+    --ink: #ded4c6;
+    --heading: #f0e7d9;
+    --muted: #9a8e7e;
+    --day-ink: #d8cec0;
+    --subject-ink: #f2ebe0;
+    --room-ink: #9a8e7e;
+    --teacher-ink: #8d8272;
+
+    --surface: #221e1a;
+    --head-surface: #2a251f;
+    --card-border: #383129;
+    --grid-line: #322c25;
+    --grid-line-soft: #2c2721;
+
+    --shadow-sheet: rgba(0, 0, 0, 0.45);
+    --shadow-drawer: rgba(0, 0, 0, 0.35);
+    --shadow-drawer-now: rgba(0, 0, 0, 0.45);
+    --shadow-drawer-mobile: rgba(0, 0, 0, 0.35);
+    --shadow-card: rgba(0, 0, 0, 0.4);
+    --shadow-pop: rgba(0, 0, 0, 0.55);
+    --shadow-accent: rgba(0, 0, 0, 0.5);
+    --shadow-end: rgba(0, 0, 0, 0.5);
+
+    --accent-bg: #f0c14b;
+    --accent-ink: #2b2210;
+    --chip-active-bg: #3f3218;
+
+    --p1-bg: #1e3440;
+    --p1-ink: #8fc9e4;
+    --p2-bg: #1c3a2b;
+    --p2-ink: #8bd9b2;
+    --p3-bg: #40291e;
+    --p3-ink: #eaa985;
+    --p4-bg: #35302a;
+    --p4-ink: #c3b4a0;
+    --p5-bg: #2c2743;
+    --p5-ink: #b3a6ee;
+    --p6-bg: #3f3318;
+    --p6-ink: #e5bb5c;
+
+    --drawer-ink: #a2947f;
+    --drawer-muted: #7d7263;
+
+    --now-track: #2e2719;
+    --now-fill: #4a3a17;
+    --now-line: #f0c14b;
+    --now-ink: #f5d98a;
+    --now-muted: #d0ab52;
+
+    --end-track: #33211f;
+    --end-fill: #55282a;
+    --end-line: #e24b4b;
+    --end-ink: #ffb0ab;
+    --end-muted: #ea8c86;
+
+    --lunch-bg: #1e1b17;
+    --lunch-ink: #8b8072;
+
+    --today-bg: #2a241b;
+    --today-day-ink: #f3e9d8;
+    --today-rail: #f0b429;
+    --cell-now-fill: #453818;
+    --cell-now-line: #6b5726;
+}
+
+/* Selected chips flip to amber-on-tint; --accent-ink is dark and only works on the solid buttons. */
+html.dark .time-lab-panel button.is-selected {
+    color: var(--now-ink);
+}
+
+html.dark .theme-toggle .icon-sun {
+    display: none;
+}
+
+html.dark .theme-toggle .icon-moon {
+    display: block;
+}
