@@ -357,6 +357,10 @@
                 box-shadow: inset 0 0 0 1px #e6d3a8;
             }
 
+            .timetable td.span-clone {
+                display: none;
+            }
+
             .break::before {
                 content: "\A";
                 white-space: pre;
@@ -495,6 +499,14 @@
                     display: none;
                 }
 
+                .timetable td.is-spanned {
+                    display: none;
+                }
+
+                .timetable td.span-clone {
+                    display: block;
+                }
+
                 .timetable tr {
                     height: auto;
                     margin: 0 0 14px;
@@ -568,12 +580,6 @@
                 .timetable td[data-slot="6"]::before {
                     background: #fff1c2;
                     color: #a07812;
-                }
-
-                .timetable td[data-slot="1–2"]::before {
-                    width: 40px;
-                    border-radius: 12px;
-                    font-size: 12px;
                 }
 
                 .timetable td::after {
@@ -1061,6 +1067,27 @@
                             : `${firstPeriod + 1}–${lastPeriod + 1}`;
                         cell.dataset.slot = slotLabel;
                         cell.dataset.time = `${lessonPeriods[firstPeriod][0]} - ${lessonPeriods[lastPeriod][1]}`;
+                        cell.dataset.firstPeriod = String(firstPeriod);
+                        cell.dataset.lastPeriod = String(lastPeriod);
+
+                        if (span > 1) {
+                            // Mobile cards show one lesson per row, so a spanning cell gets a copy per period.
+                            cell.classList.add("is-spanned");
+                            const clones = [];
+                            for (let period = firstPeriod; period <= lastPeriod; period += 1) {
+                                const clone = cell.cloneNode(true);
+                                clone.classList.remove("is-spanned");
+                                clone.classList.add("span-clone");
+                                clone.removeAttribute("colspan");
+                                clone.dataset.slot = String(period + 1);
+                                clone.dataset.time = `${lessonPeriods[period][0]} - ${lessonPeriods[period][1]}`;
+                                clone.dataset.firstPeriod = String(period);
+                                clone.dataset.lastPeriod = String(period);
+                                clones.push(clone);
+                            }
+                            cell.after(...clones);
+                        }
+
                         coveredPeriods += span;
                     }
                 });
@@ -1153,17 +1180,14 @@
                     return;
                 }
 
-                let coveredPeriods = 0;
                 for (const cell of todayRow.querySelectorAll("td")) {
-                    const span = cell.colSpan;
-                    const firstPeriod = coveredPeriods;
-                    const lastPeriod = coveredPeriods + span - 1;
+                    const firstPeriod = Number(cell.dataset.firstPeriod);
+                    const lastPeriod = Number(cell.dataset.lastPeriod);
                     if (currentPeriod >= firstPeriod && currentPeriod <= lastPeriod) {
                         const [start, end] = lessonPeriods[currentPeriod];
                         cell.classList.add("is-now");
                         applyProgress(cell, progressPercent(toMinutes(start), toMinutes(end), minutesNow));
                     }
-                    coveredPeriods += span;
                 }
             };
 
@@ -1185,9 +1209,26 @@
                 wrap.append(drawer);
             };
 
+            const scrollToToday = () => {
+                if (!window.matchMedia("(max-width: 900px)").matches) {
+                    return;
+                }
+
+                const todayRow = document.querySelector("tr.is-today");
+                if (!todayRow) {
+                    return;
+                }
+
+                window.scrollTo({
+                    top: todayRow.getBoundingClientRect().top + window.scrollY - 12,
+                    behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth",
+                });
+            };
+
             decorateSlots();
             markCurrentCell();
             placeDrawer();
+            scrollToToday();
             setInterval(() => {
                 markCurrentCell();
                 placeDrawer();
@@ -1204,7 +1245,10 @@
             };
 
             syncDrawerOffset();
-            document.fonts?.ready.then(syncDrawerOffset);
+            document.fonts?.ready.then(() => {
+                syncDrawerOffset();
+                scrollToToday();
+            });
             window.addEventListener("resize", () => {
                 syncDrawerOffset();
                 placeDrawer();
@@ -1222,6 +1266,7 @@
             const applyPreview = () => {
                 markCurrentCell();
                 placeDrawer();
+                scrollToToday();
                 renderPreviewControls();
             };
 
