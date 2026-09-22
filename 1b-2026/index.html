@@ -33,11 +33,21 @@
                 --grid-line: #f1e8db;
                 --grid-line-soft: #f6f0e8;
 
+                --glass-blur: 18px;
+                --aurora-opacity: 0.5;
+                --surface-glass: rgba(255, 255, 255, 0.86);
+                --surface-glass-strong: rgba(255, 255, 255, 0.94);
+                --head-glass: rgba(248, 251, 254, 0.78);
+                --lunch-glass: rgba(251, 250, 248, 0.66);
+                --today-glass: rgba(255, 250, 242, 0.9);
+                --cell-now-glass: rgba(255, 240, 194, 0.92);
+                --glass-border: rgba(243, 234, 220, 0.9);
+                --glass-sheen: rgba(255, 255, 255, 0.75);
+
                 --shadow-sheet: rgba(90, 70, 40, 0.08);
                 --shadow-drawer: rgba(90, 70, 40, 0.05);
                 --shadow-drawer-now: rgba(90, 70, 40, 0.08);
                 --shadow-drawer-mobile: rgba(90, 70, 40, 0.06);
-                --shadow-card: rgba(90, 70, 40, 0.07);
                 --shadow-pop: rgba(90, 70, 40, 0.14);
                 --shadow-accent: rgba(122, 84, 16, 0.22);
                 --shadow-end: rgba(180, 40, 40, 0.16);
@@ -89,17 +99,49 @@
             }
 
             body {
+                position: relative;
                 margin: 0;
                 min-height: 100vh;
                 padding: 28px 20px 40px;
                 color: var(--ink);
                 font-family: "Nunito", "Trebuchet MS", "Segoe UI", sans-serif;
+                background: var(--bg-base);
+            }
+
+            /* Drifting colour blobs sit behind everything so the frosted panels have something to blur. */
+            body::before {
+                content: "";
+                position: fixed;
+                inset: -25vmax;
+                z-index: -1;
+                opacity: var(--aurora-opacity, 1);
                 background:
-                    radial-gradient(circle at 8% 10%, var(--glow-1) 0, transparent 26%),
-                    radial-gradient(circle at 94% 6%, var(--glow-2) 0, transparent 24%),
-                    radial-gradient(circle at 90% 92%, var(--glow-3) 0, transparent 22%),
-                    radial-gradient(circle at 6% 90%, var(--glow-4) 0, transparent 20%),
-                    var(--bg-base);
+                    radial-gradient(circle at 22% 24%, var(--glow-1) 0, transparent 40%),
+                    radial-gradient(circle at 78% 16%, var(--glow-2) 0, transparent 38%),
+                    radial-gradient(circle at 84% 82%, var(--glow-3) 0, transparent 36%),
+                    radial-gradient(circle at 16% 86%, var(--glow-4) 0, transparent 34%);
+                filter: blur(30px) saturate(115%);
+                animation: aurora 32s ease-in-out infinite alternate;
+            }
+
+            @keyframes aurora {
+                0% {
+                    transform: translate3d(0, 0, 0) scale(1) rotate(0deg);
+                }
+
+                50% {
+                    transform: translate3d(2%, -2.5%, 0) scale(1.08) rotate(2deg);
+                }
+
+                100% {
+                    transform: translate3d(-2.5%, 2%, 0) scale(1.04) rotate(-2deg);
+                }
+            }
+
+            @media (prefers-reduced-motion: reduce) {
+                body::before {
+                    animation: none;
+                }
             }
 
             .board {
@@ -142,10 +184,14 @@
                 flex: 1 1 auto;
                 min-width: 0;
                 overflow: hidden;
-                border: 1px solid var(--card-border);
+                border: 1px solid var(--glass-border);
                 border-radius: 22px;
-                background: var(--surface);
-                box-shadow: 0 18px 40px var(--shadow-sheet);
+                background: var(--surface-glass);
+                backdrop-filter: blur(var(--glass-blur)) saturate(150%);
+                -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(150%);
+                box-shadow:
+                    inset 0 1px 0 var(--glass-sheen),
+                    0 18px 40px var(--shadow-sheet);
             }
 
             .drawer {
@@ -160,10 +206,12 @@
                 --drawer-tuck: 36px;
                 margin: var(--schedule-header, 72px) 0 0 -36px;
                 padding: 28px 18px 28px 52px;
-                border: 1px solid var(--card-border);
+                border: 1px solid var(--glass-border);
                 border-left: 0;
                 border-radius: 0 22px 22px 0;
-                background: var(--surface);
+                background: var(--surface-glass);
+                backdrop-filter: blur(var(--glass-blur)) saturate(150%);
+                -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(150%);
                 box-shadow: 10px 0 18px var(--shadow-drawer);
                 color: var(--drawer-ink);
                 opacity: 0.72;
@@ -261,11 +309,11 @@
             .timetable td {
                 border: 1px solid var(--grid-line);
                 padding: 0;
-                background: var(--surface);
+                background: transparent;
             }
 
             thead th {
-                background: var(--head-surface);
+                background: var(--head-glass);
             }
 
             .day-column {
@@ -294,6 +342,7 @@
                 font-size: 18px;
                 font-weight: 800;
                 line-height: 1;
+                box-shadow: inset 0 1px 0 var(--glass-sheen);
             }
 
             thead th:nth-child(3) .period {
@@ -405,7 +454,7 @@
             }
 
             .timetable td.lunch {
-                background: var(--lunch-bg);
+                background: var(--lunch-glass);
                 color: var(--lunch-ink);
                 font-size: 17px;
                 font-weight: 800;
@@ -415,7 +464,7 @@
 
             tr.is-today > .day,
             tr.is-today > td {
-                background: var(--today-bg);
+                background: var(--today-glass);
             }
 
             tr.is-today > .day {
@@ -424,11 +473,16 @@
                 box-shadow: inset 5px 0 0 var(--today-rail);
             }
 
+            /* Lunch keeps its own tint, so layer it over the today wash instead of replacing it. */
+            tr.is-today > td.lunch {
+                background: linear-gradient(var(--lunch-glass), var(--lunch-glass)) var(--today-glass);
+            }
+
             tr.is-today > td.is-now {
                 background: linear-gradient(
                     to right,
-                    var(--cell-now-fill) var(--progress, 0%),
-                    var(--today-bg) var(--progress, 0%)
+                    var(--cell-now-glass) var(--progress, 0%),
+                    var(--today-glass) var(--progress, 0%)
                 );
                 box-shadow: inset 0 0 0 1px var(--cell-now-line);
             }
@@ -456,6 +510,8 @@
                     border: 0;
                     border-radius: 0;
                     background: transparent;
+                    backdrop-filter: none;
+                    -webkit-backdrop-filter: none;
                     box-shadow: none;
                 }
 
@@ -482,7 +538,7 @@
                     min-height: 0;
                     margin: -22px 18px 12px;
                     padding: 28px 12px 12px;
-                    border: 1px solid var(--card-border);
+                    border: 1px solid var(--glass-border);
                     border-top: 0;
                     border-radius: 0 0 14px 14px;
                     box-shadow: 0 8px 16px var(--shadow-drawer-mobile);
@@ -503,7 +559,14 @@
                 }
 
                 .drawer-handle {
-                    display: none;
+                    top: 17px;
+                    right: auto;
+                    left: 50%;
+                    display: block;
+                    width: 32px;
+                    height: 2px;
+                    transform: translateX(-50%);
+                    background: var(--drawer-muted);
                 }
 
                 .drawer.is-now {
@@ -524,13 +587,7 @@
                 }
 
                 .drawer.is-now .drawer-handle {
-                    display: block;
-                    top: 22px;
-                    right: auto;
-                    left: 50%;
-                    width: 32px;
-                    height: 2px;
-                    transform: translateX(-50%);
+                    background: var(--now-line);
                 }
 
                 .drawer.is-now .drawer-time {
@@ -587,10 +644,12 @@
                     height: auto;
                     margin: 0 0 14px;
                     overflow: hidden;
-                    border: 1px solid var(--card-border);
+                    border: 1px solid var(--glass-border);
                     border-radius: 18px;
-                    background: var(--surface);
-                    box-shadow: 0 10px 24px var(--shadow-card);
+                    background: var(--surface-glass);
+                    backdrop-filter: blur(var(--glass-blur)) saturate(150%);
+                    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(150%);
+                    box-shadow: inset 0 1px 0 var(--glass-sheen);
                 }
 
                 .timetable th,
@@ -607,7 +666,7 @@
                     padding: 14px 16px 14px 18px;
                     font-size: 18px;
                     text-align: left;
-                    background: var(--surface);
+                    background: transparent;
                 }
 
                 .timetable td {
@@ -730,9 +789,14 @@
                     text-align: left;
                 }
 
+                /* Cards already separate the days here, so today only needs the rail, not a wash. */
                 tr.is-today > .day,
                 tr.is-today > td {
-                    background: var(--today-bg);
+                    background: transparent;
+                }
+
+                tr.is-today > td.lunch {
+                    background: var(--lunch-glass);
                 }
 
                 tr.is-today > .day {
@@ -742,8 +806,8 @@
                 tr.is-today > td.is-now {
                     background: linear-gradient(
                         to right,
-                        var(--cell-now-fill) var(--progress, 0%),
-                        var(--today-bg) var(--progress, 0%)
+                        var(--cell-now-glass) var(--progress, 0%),
+                        transparent var(--progress, 0%)
                     );
                     box-shadow: inset 3px 0 0 var(--cell-now-line);
                 }
@@ -771,10 +835,14 @@
                 max-height: min(70vh, 540px);
                 padding: 8px;
                 overflow: auto;
-                border: 1px solid var(--card-border);
+                border: 1px solid var(--glass-border);
                 border-radius: 18px;
-                background: var(--surface);
-                box-shadow: 0 14px 32px var(--shadow-pop);
+                background: var(--surface-glass-strong);
+                backdrop-filter: blur(var(--glass-blur)) saturate(150%);
+                -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(150%);
+                box-shadow:
+                    inset 0 1px 0 var(--glass-sheen),
+                    0 14px 32px var(--shadow-pop);
             }
 
             .time-lab.is-open .time-lab-panel {
@@ -803,7 +871,7 @@
 
             .time-lab-panel button {
                 padding: 8px 12px;
-                background: var(--head-surface);
+                background: var(--head-glass);
                 color: var(--heading);
                 font-size: 14px;
                 text-align: left;

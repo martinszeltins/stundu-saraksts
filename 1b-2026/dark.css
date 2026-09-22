@@ -23,11 +23,21 @@ html.dark {
     --grid-line: #322c25;
     --grid-line-soft: #2c2721;
 
+    --glass-blur: 22px;
+    --aurora-opacity: 1;
+    --surface-glass: rgba(34, 30, 26, 0.58);
+    --surface-glass-strong: rgba(34, 30, 26, 0.82);
+    --head-glass: rgba(60, 53, 44, 0.42);
+    --lunch-glass: rgba(16, 14, 12, 0.32);
+    --today-glass: rgba(66, 55, 34, 0.38);
+    --cell-now-glass: rgba(116, 91, 36, 0.52);
+    --glass-border: rgba(255, 255, 255, 0.1);
+    --glass-sheen: rgba(255, 255, 255, 0.07);
+
     --shadow-sheet: rgba(0, 0, 0, 0.45);
     --shadow-drawer: rgba(0, 0, 0, 0.35);
     --shadow-drawer-now: rgba(0, 0, 0, 0.45);
     --shadow-drawer-mobile: rgba(0, 0, 0, 0.35);
-    --shadow-card: rgba(0, 0, 0, 0.4);
     --shadow-pop: rgba(0, 0, 0, 0.55);
     --shadow-accent: rgba(0, 0, 0, 0.5);
     --shadow-end: rgba(0, 0, 0, 0.5);
