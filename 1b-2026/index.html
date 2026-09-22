@@ -1,0 +1,1281 @@
+<!DOCTYPE html>
+<html lang="lv">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Stundu saraksts</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800&display=swap" rel="stylesheet">
+        <style>
+            * {
+                box-sizing: border-box;
+            }
+
+            body {
+                margin: 0;
+                min-height: 100vh;
+                padding: 28px 20px 40px;
+                color: #3e4a5a;
+                font-family: "Nunito", "Trebuchet MS", "Segoe UI", sans-serif;
+                background:
+                    radial-gradient(circle at 8% 10%, #ffe7b0 0, transparent 26%),
+                    radial-gradient(circle at 94% 6%, #d4efff 0, transparent 24%),
+                    radial-gradient(circle at 90% 92%, #ffd9e6 0, transparent 22%),
+                    radial-gradient(circle at 6% 90%, #d8f6e4 0, transparent 20%),
+                    #fffaf3;
+            }
+
+            .board {
+                max-width: 1328px;
+                margin: 0 auto;
+            }
+
+            .masthead {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                margin: 0 6px 14px;
+            }
+
+            .badge {
+                padding: 5px 12px;
+                border-radius: 999px;
+                background: #ffe08a;
+                color: #7a5410;
+                font-size: 13px;
+                font-weight: 800;
+            }
+
+            h1 {
+                margin: 0;
+                color: #35506a;
+                font-size: 28px;
+                font-weight: 800;
+                letter-spacing: -0.02em;
+            }
+
+            .sheet-wrap {
+                display: flex;
+                align-items: stretch;
+            }
+
+            .sheet {
+                position: relative;
+                z-index: 1;
+                flex: 1 1 auto;
+                min-width: 0;
+                overflow: hidden;
+                border: 1px solid #f3eadc;
+                border-radius: 22px;
+                background: #fff;
+                box-shadow: 0 18px 40px rgba(90, 70, 40, 0.08);
+            }
+
+            .drawer {
+                position: relative;
+                z-index: 0;
+                display: flex;
+                flex: 0 0 104px;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                gap: 18px;
+                --drawer-tuck: 36px;
+                margin: var(--schedule-header, 72px) 0 0 -36px;
+                padding: 28px 18px 28px 52px;
+                border: 1px solid #f3eadc;
+                border-left: 0;
+                border-radius: 0 22px 22px 0;
+                background: #fff;
+                box-shadow: 10px 0 18px rgba(90, 70, 40, 0.05);
+                color: #8a7968;
+                opacity: 0.72;
+            }
+
+            .drawer.is-now {
+                background: linear-gradient(
+                    to right,
+                    #fff6e0 var(--drawer-tuck),
+                    #f7e4bc var(--drawer-tuck),
+                    #f7e4bc calc(var(--drawer-tuck) + (100% - var(--drawer-tuck)) * var(--progress-ratio, 0)),
+                    #fff6e0 calc(var(--drawer-tuck) + (100% - var(--drawer-tuck)) * var(--progress-ratio, 0))
+                );
+                border-color: #f0c14b;
+                border-left-color: transparent;
+                color: #7a5410;
+                opacity: 1;
+                box-shadow:
+                    inset 0 2px 0 #f0c14b,
+                    inset -2px 0 0 #f0c14b,
+                    inset 0 -2px 0 #f0c14b,
+                    10px 0 18px rgba(90, 70, 40, 0.08);
+            }
+
+            .drawer-handle {
+                position: absolute;
+                top: 50%;
+                right: 10px;
+                display: none;
+                width: 5px;
+                height: 42px;
+                transform: translateY(-50%);
+                border-radius: 999px;
+                background: #f0c14b;
+            }
+
+            .drawer.is-now .drawer-handle {
+                display: block;
+                animation: drawer-alert 2s ease-in-out infinite;
+            }
+
+            .drawer-title {
+                margin: 0;
+                writing-mode: vertical-rl;
+                font-size: 16px;
+                font-weight: 800;
+            }
+
+            .drawer-time {
+                writing-mode: vertical-rl;
+                color: #b0a494;
+                font-size: 13px;
+                font-weight: 700;
+            }
+
+            .drawer.is-now.is-ending {
+                background: linear-gradient(
+                    to right,
+                    #fde8e6 var(--drawer-tuck),
+                    #f7d8d4 var(--drawer-tuck),
+                    #f7d8d4 calc(var(--drawer-tuck) + (100% - var(--drawer-tuck)) * var(--progress-ratio, 0)),
+                    #fde8e6 calc(var(--drawer-tuck) + (100% - var(--drawer-tuck)) * var(--progress-ratio, 0))
+                );
+                border-color: #e24b4b;
+                border-left-color: transparent;
+                color: #9b1c1c;
+                box-shadow:
+                    inset 0 2px 0 #e24b4b,
+                    inset -2px 0 0 #e24b4b,
+                    inset 0 -2px 0 #e24b4b,
+                    10px 0 18px rgba(180, 40, 40, 0.16);
+            }
+
+            .drawer.is-now.is-ending .drawer-handle {
+                background: #e24b4b;
+            }
+
+            .drawer.is-now.is-ending .drawer-time {
+                color: #c23636;
+            }
+
+            @keyframes drawer-alert {
+                50% {
+                    opacity: 0.35;
+                }
+            }
+
+            .timetable {
+                width: 100%;
+                border-collapse: collapse;
+                table-layout: fixed;
+            }
+
+            .timetable th,
+            .timetable td {
+                border: 1px solid #f1e8db;
+                padding: 0;
+                background: #fff;
+            }
+
+            thead th {
+                background: #f8fbfe;
+            }
+
+            .day-column {
+                width: 13%;
+            }
+
+            .slot {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                gap: 2px;
+                min-height: 68px;
+                padding: 8px 4px 10px;
+            }
+
+            .period {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                width: 34px;
+                height: 34px;
+                border-radius: 50%;
+                background: #e7f4fc;
+                color: #2f7eae;
+                font-size: 18px;
+                font-weight: 800;
+                line-height: 1;
+            }
+
+            thead th:nth-child(3) .period {
+                background: #d9f6e6;
+                color: #2f8a62;
+            }
+
+            thead th:nth-child(4) .period {
+                background: #ffe4d6;
+                color: #c46a45;
+            }
+
+            thead th:nth-child(5) .period {
+                background: #f3efe8;
+                color: #8a7b68;
+            }
+
+            thead th:nth-child(6) .period {
+                background: #ece4ff;
+                color: #6d5bd0;
+            }
+
+            thead th:nth-child(7) .period {
+                background: #fff1c2;
+                color: #a07812;
+            }
+
+            .time {
+                color: #8a96a6;
+                font-size: 13px;
+                font-weight: 700;
+                line-height: 1.2;
+            }
+
+            .day {
+                color: #4a5b6e;
+                font-size: 16px;
+                font-weight: 700;
+                text-align: center;
+                vertical-align: middle;
+                padding: 8px;
+            }
+
+            tbody tr {
+                height: 176px;
+            }
+
+            .lesson,
+            .split-wrap {
+                height: 176px;
+                max-height: 176px;
+                overflow: hidden;
+            }
+
+            .lesson,
+            .half {
+                display: grid;
+                grid-template-rows: auto 1fr auto;
+                align-items: center;
+                min-height: 0;
+                padding: 6px 8px 8px;
+            }
+
+            .split-wrap {
+                display: grid;
+                grid-template-rows: minmax(0, 1fr) minmax(0, 1fr);
+            }
+
+            .half {
+                height: 100%;
+                padding: 3px 6px 2px;
+            }
+
+            .half .subject {
+                line-height: 1.1;
+            }
+
+            .half + .half {
+                border-top: 1px solid #f1e8db;
+            }
+
+            .room {
+                align-self: start;
+                justify-self: start;
+                color: #8b97a6;
+                font-size: 12px;
+                font-weight: 800;
+                line-height: 1.2;
+            }
+
+            .subject {
+                align-self: center;
+                justify-self: center;
+                color: #2f4256;
+                font-size: 17px;
+                font-weight: 800;
+                line-height: 1.15;
+                text-align: center;
+            }
+
+            .teacher {
+                align-self: end;
+                justify-self: end;
+                color: #9aa3b0;
+                font-size: 12px;
+                font-weight: 700;
+                line-height: 1.2;
+                text-align: right;
+            }
+
+            .timetable td.lunch {
+                background: #fbfaf8;
+                color: #8d8378;
+                font-size: 17px;
+                font-weight: 800;
+                text-align: center;
+                vertical-align: middle;
+            }
+
+            tr.is-today > .day,
+            tr.is-today > td {
+                background: #fffaf2;
+            }
+
+            tr.is-today > .day {
+                color: #3d5470;
+                font-weight: 800;
+                box-shadow: inset 5px 0 0 #f0b429;
+            }
+
+            tr.is-today > td.is-now {
+                background: linear-gradient(
+                    to right,
+                    #fff0c2 var(--progress, 0%),
+                    #fffaf2 var(--progress, 0%)
+                );
+                box-shadow: inset 0 0 0 1px #e6d3a8;
+            }
+
+            .break::before {
+                content: "\A";
+                white-space: pre;
+            }
+
+            @media (max-width: 900px) {
+                body {
+                    padding: 18px 14px 32px;
+                }
+
+                h1 {
+                    font-size: 24px;
+                }
+
+                .sheet {
+                    overflow: visible;
+                    border: 0;
+                    border-radius: 0;
+                    background: transparent;
+                    box-shadow: none;
+                }
+
+                .sheet-wrap {
+                    display: block;
+                }
+
+                tr.is-today {
+                    position: relative;
+                    z-index: 1;
+                    margin-bottom: 0;
+                    box-shadow: none;
+                }
+
+                .drawer {
+                    position: relative;
+                    z-index: 0;
+                    display: flex;
+                    flex-direction: row;
+                    align-items: center;
+                    justify-content: center;
+                    gap: 16px;
+                    width: calc(100% - 36px);
+                    min-height: 0;
+                    margin: -22px 18px 12px;
+                    padding: 28px 12px 12px;
+                    border: 1px solid #f3eadc;
+                    border-top: 0;
+                    border-radius: 0 0 14px 14px;
+                    box-shadow: 0 8px 16px rgba(90, 70, 40, 0.06);
+                }
+
+                .drawer-title,
+                .drawer-time {
+                    flex-shrink: 0;
+                    white-space: nowrap;
+                }
+
+                .drawer-title {
+                    font-size: 14px;
+                }
+
+                .drawer-time {
+                    font-size: 12px;
+                }
+
+                .drawer-handle {
+                    display: none;
+                }
+
+                .drawer.is-now {
+                    padding-top: 28px;
+                    background: linear-gradient(
+                        to right,
+                        #f7e4bc var(--progress, 0%),
+                        #fff6e0 var(--progress, 0%)
+                    );
+                    border-color: #f0c14b;
+                    border-top-color: transparent;
+                    color: #7a5410;
+                    opacity: 1;
+                    box-shadow:
+                        inset 2px 0 0 #f0c14b,
+                        inset -2px 0 0 #f0c14b,
+                        inset 0 -2px 0 #f0c14b;
+                }
+
+                .drawer.is-now .drawer-handle {
+                    display: block;
+                    top: 22px;
+                    right: auto;
+                    left: 50%;
+                    width: 32px;
+                    height: 2px;
+                    transform: translateX(-50%);
+                }
+
+                .drawer.is-now .drawer-time {
+                    color: #a07812;
+                }
+
+                .drawer.is-now.is-ending {
+                    background: linear-gradient(
+                        to right,
+                        #f7d8d4 var(--progress, 0%),
+                        #fde8e6 var(--progress, 0%)
+                    );
+                    border-color: #e24b4b;
+                    border-top-color: transparent;
+                    color: #9b1c1c;
+                    box-shadow:
+                        inset 2px 0 0 #e24b4b,
+                        inset -2px 0 0 #e24b4b,
+                        inset 0 -2px 0 #e24b4b;
+                }
+
+                .drawer.is-now.is-ending .drawer-handle {
+                    background: #e24b4b;
+                }
+
+                .drawer-title,
+                .drawer-time {
+                    writing-mode: horizontal-tb;
+                }
+
+                .timetable,
+                .timetable tbody,
+                .timetable tr,
+                .timetable th,
+                .timetable td {
+                    display: block;
+                    width: auto;
+                    height: auto;
+                }
+
+                .timetable thead {
+                    display: none;
+                }
+
+                .timetable tr {
+                    height: auto;
+                    margin: 0 0 14px;
+                    overflow: hidden;
+                    border: 1px solid #f3eadc;
+                    border-radius: 18px;
+                    background: #fff;
+                    box-shadow: 0 10px 24px rgba(90, 70, 40, 0.07);
+                }
+
+                .timetable th,
+                .timetable td {
+                    border: 0;
+                    border-bottom: 1px solid #f6f0e8;
+                }
+
+                .timetable td:last-child {
+                    border-bottom: 0;
+                }
+
+                .timetable th.day {
+                    padding: 14px 16px 14px 18px;
+                    font-size: 18px;
+                    text-align: left;
+                    background: #fff;
+                }
+
+                .timetable td {
+                    position: relative;
+                    padding: 12px 14px 12px 64px;
+                }
+
+                .timetable td::before {
+                    content: attr(data-slot);
+                    position: absolute;
+                    top: 50%;
+                    left: 12px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    width: 36px;
+                    height: 36px;
+                    transform: translateY(-50%);
+                    border-radius: 50%;
+                    background: #e7f4fc;
+                    color: #2f7eae;
+                    font-size: 16px;
+                    font-weight: 800;
+                }
+
+                .timetable td[data-slot="2"]::before {
+                    background: #d9f6e6;
+                    color: #2f8a62;
+                }
+
+                .timetable td[data-slot="3"]::before {
+                    background: #ffe4d6;
+                    color: #c46a45;
+                }
+
+                .timetable td[data-slot="4"]::before {
+                    background: #f3efe8;
+                    color: #8a7b68;
+                }
+
+                .timetable td[data-slot="5"]::before {
+                    background: #ece4ff;
+                    color: #6d5bd0;
+                }
+
+                .timetable td[data-slot="6"]::before {
+                    background: #fff1c2;
+                    color: #a07812;
+                }
+
+                .timetable td[data-slot="1–2"]::before {
+                    width: 40px;
+                    border-radius: 12px;
+                    font-size: 12px;
+                }
+
+                .timetable td::after {
+                    content: attr(data-time);
+                    display: block;
+                    margin-top: 3px;
+                    color: #8a96a6;
+                    font-size: 12px;
+                    font-weight: 700;
+                }
+
+                .lesson,
+                .split-wrap,
+                .half {
+                    height: auto;
+                    max-height: none;
+                    overflow: visible;
+                }
+
+                .lesson,
+                .half {
+                    display: grid;
+                    grid-template-columns: minmax(0, 1fr) auto;
+                    grid-template-rows: auto auto;
+                    grid-template-areas:
+                        "subject room"
+                        "teacher teacher";
+                    align-items: center;
+                    padding: 0;
+                    column-gap: 10px;
+                    row-gap: 2px;
+                }
+
+                .split-wrap {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 8px;
+                }
+
+                .half + .half {
+                    border-top: 1px solid #f1e8db;
+                    padding-top: 8px;
+                }
+
+                .subject {
+                    grid-area: subject;
+                    justify-self: start;
+                    font-size: 16px;
+                    text-align: left;
+                }
+
+                .room {
+                    grid-area: room;
+                    justify-self: end;
+                    align-self: center;
+                }
+
+                .teacher {
+                    grid-area: teacher;
+                    justify-self: start;
+                    align-self: start;
+                }
+
+                .break::before {
+                    content: " ";
+                    white-space: normal;
+                }
+
+                .timetable td.lunch {
+                    color: #8d8378;
+                    font-size: 16px;
+                    text-align: left;
+                }
+
+                tr.is-today > .day,
+                tr.is-today > td {
+                    background: #fffaf2;
+                }
+
+                tr.is-today > .day {
+                    box-shadow: inset 5px 0 0 #f0b429;
+                }
+
+                tr.is-today > td.is-now {
+                    background: linear-gradient(
+                        to right,
+                        #fff0c2 var(--progress, 0%),
+                        #fffaf2 var(--progress, 0%)
+                    );
+                    box-shadow: inset 3px 0 0 #e6d3a8;
+                }
+            }
+
+            .time-lab {
+                position: fixed;
+                right: 20px;
+                bottom: 20px;
+                z-index: 5;
+                flex-direction: column;
+                align-items: flex-end;
+                gap: 10px;
+                display: none;
+            }
+
+            .time-lab.is-visible {
+                display: flex;
+            }
+
+            .time-lab-panel {
+                display: none;
+                width: 196px;
+                max-height: min(70vh, 540px);
+                padding: 8px;
+                overflow: auto;
+                border: 1px solid #f3eadc;
+                border-radius: 18px;
+                background: #fff;
+                box-shadow: 0 14px 32px rgba(90, 70, 40, 0.14);
+            }
+
+            .time-lab.is-open .time-lab-panel {
+                display: grid;
+                gap: 6px;
+            }
+
+            .time-lab-days {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 6px;
+            }
+
+            .time-lab-days button:last-child {
+                grid-column: 1 / -1;
+            }
+
+            .time-lab-panel button,
+            .time-lab-toggle {
+                border: 0;
+                border-radius: 999px;
+                font-family: inherit;
+                font-weight: 800;
+                cursor: pointer;
+            }
+
+            .time-lab-panel button {
+                padding: 8px 12px;
+                background: #f8fbfe;
+                color: #35506a;
+                font-size: 14px;
+                text-align: left;
+            }
+
+            .time-lab-panel button.is-selected {
+                background: #fff3cc;
+                color: #7a5410;
+            }
+
+            .time-lab-toggle {
+                min-width: 72px;
+                padding: 14px 18px;
+                background: #ffe08a;
+                color: #7a5410;
+                font-size: 15px;
+                box-shadow: 0 10px 24px rgba(122, 84, 16, 0.22);
+            }
+        </style>
+    </head>
+    <body>
+        <main class="board">
+            <header class="masthead">
+                <span class="badge">1.b klase</span>
+                <h1>Stundu saraksts</h1>
+            </header>
+            <div class="sheet-wrap">
+            <div class="sheet">
+        <table class="timetable">
+            <colgroup>
+                <col class="day-column">
+                <col>
+                <col>
+                <col>
+                <col>
+                <col>
+                <col>
+            </colgroup>
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>
+                        <div class="slot">
+                            <span class="period">1</span>
+                            <span class="time">8:30 - 9:10</span>
+                        </div>
+                    </th>
+                    <th>
+                        <div class="slot">
+                            <span class="period">2</span>
+                            <span class="time">9:20 - 10:00</span>
+                        </div>
+                    </th>
+                    <th>
+                        <div class="slot">
+                            <span class="period">3</span>
+                            <span class="time">10:10 - 10:50</span>
+                        </div>
+                    </th>
+                    <th>
+                        <div class="slot">
+                            <span class="period">4</span>
+                            <span class="time">11:00 - 11:40</span>
+                        </div>
+                    </th>
+                    <th>
+                        <div class="slot">
+                            <span class="period">5</span>
+                            <span class="time">11:50 - 12:30</span>
+                        </div>
+                    </th>
+                    <th>
+                        <div class="slot">
+                            <span class="period">6</span>
+                            <span class="time">12:40 - 13:20</span>
+                        </div>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr data-day="1">
+                    <th class="day" scope="row">Pirmdiena</th>
+                    <td>
+                        <div class="lesson">
+                            <span class="room">208.</span>
+                            <span class="subject">Vizuālā<span class="break"></span>māksla</span>
+                            <span class="teacher">Hāze</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="lesson">
+                            <span class="room">sz_1</span>
+                            <span class="subject">Sports un<span class="break"></span>veselība</span>
+                            <span class="teacher">Blūma</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="lesson">
+                            <span class="room">103. / 202.</span>
+                            <span class="subject">Latviešu<span class="break"></span>valoda</span>
+                            <span class="teacher">Ķīra / Kraule</span>
+                        </div>
+                    </td>
+                    <td class="lunch">Pusdienas</td>
+                    <td>
+                        <div class="lesson">
+                            <span class="room">304.</span>
+                            <span class="subject">Matemātika</span>
+                            <span class="teacher">Ločmele</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="split-wrap">
+                            <div class="half">
+                                <span class="room">304.</span>
+                                <span class="subject">Angļu valoda</span>
+                                <span class="teacher">Ločmele</span>
+                            </div>
+                            <div class="half">
+                                <span class="room">306.</span>
+                                <span class="subject">Angļu valoda</span>
+                                <span class="teacher">Tomase</span>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                <tr data-day="2">
+                    <th class="day" scope="row">Otrdiena</th>
+                    <td>
+                        <div class="lesson">
+                            <span class="room">304. / 306.</span>
+                            <span class="subject">Angļu<span class="break"></span>valoda</span>
+                            <span class="teacher">Tomase / Ločmele</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="lesson">
+                            <span class="room">314.</span>
+                            <span class="subject">Mūzika</span>
+                            <span class="teacher">Spiridonova</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="lesson">
+                            <span class="room">103. / 202.</span>
+                            <span class="subject">Latviešu<span class="break"></span>valoda</span>
+                            <span class="teacher">Ķīra / Kraule</span>
+                        </div>
+                    </td>
+                    <td class="lunch">Pusdienas</td>
+                    <td>
+                        <div class="lesson">
+                            <span class="room">304.</span>
+                            <span class="subject">Klases stunda</span>
+                            <span class="teacher">Ločmele / Vilcāne</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="lesson">
+                            <span class="room">121.</span>
+                            <span class="subject">Datorika/<span class="break"></span>Drošības<span class="break"></span>programma<span class="break"></span>"Džimba"</span>
+                            <span class="teacher">Ķīra / Bukevica</span>
+                        </div>
+                    </td>
+                </tr>
+                <tr data-day="3">
+                    <th class="day" scope="row">Trešdiena</th>
+                    <td colspan="2">
+                        <div class="lesson">
+                            <span class="room">111.</span>
+                            <span class="subject">Dabaszinības</span>
+                            <span class="teacher">Gudone</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="lesson">
+                            <span class="room">304.</span>
+                            <span class="subject">Matemātika</span>
+                            <span class="teacher">Ločmele</span>
+                        </div>
+                    </td>
+                    <td class="lunch">Pusdienas</td>
+                    <td>
+                        <div class="lesson">
+                            <span class="room">208.</span>
+                            <span class="subject">Dizains un<span class="break"></span>tehnoloģijas</span>
+                            <span class="teacher">Hāze</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="lesson">
+                            <span class="room">103. / 202.</span>
+                            <span class="subject">Latviešu<span class="break"></span>valoda</span>
+                            <span class="teacher">Ķīra / Kraule</span>
+                        </div>
+                    </td>
+                </tr>
+                <tr data-day="4">
+                    <th class="day" scope="row">Ceturtdiena</th>
+                    <td>
+                        <div class="lesson">
+                            <span class="room">103. / 202.</span>
+                            <span class="subject">Latviešu<span class="break"></span>valoda</span>
+                            <span class="teacher">Ķīra / Kraule</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="split-wrap">
+                            <div class="half">
+                                <span class="room">103.</span>
+                                <span class="subject">Latviešu<span class="break"></span>valoda</span>
+                                <span class="teacher">Ķīra</span>
+                            </div>
+                            <div class="half">
+                                <span class="room">202.</span>
+                                <span class="subject">Latviešu<span class="break"></span>valoda</span>
+                                <span class="teacher">Kraule</span>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="lesson">
+                            <span class="room">314.</span>
+                            <span class="subject">Mūzika</span>
+                            <span class="teacher">Spiridonova</span>
+                        </div>
+                    </td>
+                    <td class="lunch">Pusdienas</td>
+                    <td>
+                        <div class="lesson">
+                            <span class="room">304. / 306.</span>
+                            <span class="subject">Angļu<span class="break"></span>valoda</span>
+                            <span class="teacher">Tomase / Ločmele</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="lesson">
+                            <span class="room">304.</span>
+                            <span class="subject">Matemātika</span>
+                            <span class="teacher">Ločmele</span>
+                        </div>
+                    </td>
+                </tr>
+                <tr data-day="5">
+                    <th class="day" scope="row">Piektdiena</th>
+                    <td>
+                        <div class="lesson">
+                            <span class="room">208.</span>
+                            <span class="subject">Dizains un<span class="break"></span>tehnoloģijas</span>
+                            <span class="teacher">Hāze</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="lesson">
+                            <span class="room">103. / 202.</span>
+                            <span class="subject">Latviešu<span class="break"></span>valoda</span>
+                            <span class="teacher">Ķīra / Kraule</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="lesson">
+                            <span class="room">304.</span>
+                            <span class="subject">Matemātika</span>
+                            <span class="teacher">Ločmele</span>
+                        </div>
+                    </td>
+                    <td class="lunch">Pusdienas</td>
+                    <td>
+                        <div class="lesson">
+                            <span class="room">sz_2</span>
+                            <span class="subject">Sports un<span class="break"></span>veselība</span>
+                            <span class="teacher">Blūma</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="lesson">
+                            <span class="room">304.</span>
+                            <span class="subject">Sociālās<span class="break"></span>zinības</span>
+                            <span class="teacher">Ločmele</span>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+            </div>
+            <aside class="drawer">
+                <span class="drawer-handle"></span>
+                <p class="drawer-title">Pagarinātā grupa</p>
+                <span class="drawer-time">13:20 - 17:00</span>
+            </aside>
+            </div>
+        </main>
+        <div class="time-lab">
+            <div class="time-lab-panel">
+                <button type="button" data-reset>Tagad</button>
+                <div class="time-lab-days">
+                    <button type="button" data-day="1">Pirmdiena</button>
+                    <button type="button" data-day="2">Otrdiena</button>
+                    <button type="button" data-day="3">Trešdiena</button>
+                    <button type="button" data-day="4">Ceturtdiena</button>
+                    <button type="button" data-day="5">Piektdiena</button>
+                </div>
+                <button type="button" data-preview="8:45">1 · 8:45</button>
+                <button type="button" data-preview="9:45">2 · 9:45</button>
+                <button type="button" data-preview="10:45">3 · 10:45</button>
+                <button type="button" data-preview="11:20">4 · 11:20</button>
+                <button type="button" data-preview="12:10">5 · 12:10</button>
+                <button type="button" data-preview="12:45">6 · 12:45</button>
+                <button type="button" data-preview="15:00">Grupa · 15:00</button>
+                <button type="button" data-preview="16:30">Beidzas · 16:30</button>
+            </div>
+            <button type="button" class="time-lab-toggle" aria-expanded="false">Laiks</button>
+        </div>
+        <script>
+            const lessonPeriods = [
+                ["8:30", "9:10"],
+                ["9:20", "10:00"],
+                ["10:10", "10:50"],
+                ["11:00", "11:40"],
+                ["11:50", "12:30"],
+                ["12:40", "13:20"],
+            ];
+
+            const toMinutes = (time) => {
+                const [hours, minutes] = time.split(":").map(Number);
+                return hours * 60 + minutes;
+            };
+
+            const decorateSlots = () => {
+                document.querySelectorAll("tbody tr").forEach((row) => {
+                    let coveredPeriods = 0;
+                    for (const cell of row.querySelectorAll("td")) {
+                        const span = cell.colSpan;
+                        const firstPeriod = coveredPeriods;
+                        const lastPeriod = coveredPeriods + span - 1;
+                        const slotLabel = span === 1
+                            ? String(firstPeriod + 1)
+                            : `${firstPeriod + 1}–${lastPeriod + 1}`;
+                        cell.dataset.slot = slotLabel;
+                        cell.dataset.time = `${lessonPeriods[firstPeriod][0]} - ${lessonPeriods[lastPeriod][1]}`;
+                        coveredPeriods += span;
+                    }
+                });
+            };
+
+            let previewMinutes = null;
+            let previewDay = null;
+
+            const dayLabels = {
+                1: "Pir",
+                2: "Otr",
+                3: "Tre",
+                4: "Cet",
+                5: "Pie",
+            };
+
+            const clockMinutes = () => {
+                if (previewMinutes !== null) {
+                    return previewMinutes;
+                }
+                const now = new Date();
+                return now.getHours() * 60 + now.getMinutes();
+            };
+
+            const activeWeekday = () => {
+                if (previewDay !== null) {
+                    return previewDay;
+                }
+                return new Date().getDay();
+            };
+
+            const progressPercent = (start, end, now) => {
+                const span = end - start;
+                if (span <= 0) {
+                    return 0;
+                }
+                return Math.min(100, Math.max(0, ((now - start) / span) * 100));
+            };
+
+            const applyProgress = (element, percent) => {
+                element.style.setProperty("--progress", `${percent}%`);
+                element.style.setProperty("--progress-ratio", String(percent / 100));
+            };
+
+            const clearProgress = () => {
+                document.querySelectorAll(".timetable td, .drawer").forEach((element) => {
+                    element.style.removeProperty("--progress");
+                    element.style.removeProperty("--progress-ratio");
+                });
+            };
+
+            const markCurrentCell = () => {
+                const weekday = activeWeekday();
+                const minutesNow = clockMinutes();
+                const todayRow = document.querySelector(`[data-day="${weekday}"]`);
+
+                clearProgress();
+                document.querySelectorAll(".is-today").forEach((row) => {
+                    row.classList.remove("is-today");
+                });
+                document.querySelectorAll(".is-now").forEach((cell) => {
+                    cell.classList.remove("is-now");
+                });
+
+                const drawer = document.querySelector(".drawer");
+                const extendedStart = toMinutes("13:20");
+                const endingStart = toMinutes("16:30");
+                const extendedEnd = toMinutes("17:00");
+                const extendedGroupIsNow = Boolean(todayRow)
+                    && minutesNow >= extendedStart
+                    && minutesNow < extendedEnd;
+                const extendedGroupIsEnding = extendedGroupIsNow && minutesNow >= endingStart;
+                drawer.classList.toggle("is-now", extendedGroupIsNow);
+                drawer.classList.toggle("is-ending", extendedGroupIsEnding);
+                if (extendedGroupIsNow) {
+                    applyProgress(drawer, progressPercent(extendedStart, extendedEnd, minutesNow));
+                }
+
+                if (!todayRow) {
+                    return;
+                }
+
+                todayRow.classList.add("is-today");
+
+                const currentPeriod = lessonPeriods.findIndex(([start, end]) => {
+                    return minutesNow >= toMinutes(start) && minutesNow < toMinutes(end);
+                });
+
+                if (currentPeriod < 0) {
+                    return;
+                }
+
+                let coveredPeriods = 0;
+                for (const cell of todayRow.querySelectorAll("td")) {
+                    const span = cell.colSpan;
+                    const firstPeriod = coveredPeriods;
+                    const lastPeriod = coveredPeriods + span - 1;
+                    if (currentPeriod >= firstPeriod && currentPeriod <= lastPeriod) {
+                        const [start, end] = lessonPeriods[currentPeriod];
+                        cell.classList.add("is-now");
+                        applyProgress(cell, progressPercent(toMinutes(start), toMinutes(end), minutesNow));
+                    }
+                    coveredPeriods += span;
+                }
+            };
+
+            const placeDrawer = () => {
+                const drawer = document.querySelector(".drawer");
+                const todayRow = document.querySelector("tr.is-today");
+                const wrap = document.querySelector(".sheet-wrap");
+                const isMobile = window.matchMedia("(max-width: 900px)").matches;
+
+                if (!drawer || !wrap) {
+                    return;
+                }
+
+                if (isMobile && todayRow) {
+                    todayRow.after(drawer);
+                    return;
+                }
+
+                wrap.append(drawer);
+            };
+
+            decorateSlots();
+            markCurrentCell();
+            placeDrawer();
+            setInterval(() => {
+                markCurrentCell();
+                placeDrawer();
+            }, 30000);
+
+            const syncDrawerOffset = () => {
+                const header = document.querySelector(".timetable thead");
+                const wrap = document.querySelector(".sheet-wrap");
+                if (!header || !wrap) {
+                    return;
+                }
+                const offset = header.getBoundingClientRect().bottom - wrap.getBoundingClientRect().top;
+                wrap.style.setProperty("--schedule-header", `${offset}px`);
+            };
+
+            syncDrawerOffset();
+            document.fonts?.ready.then(syncDrawerOffset);
+            window.addEventListener("resize", () => {
+                syncDrawerOffset();
+                placeDrawer();
+            });
+
+            const timeLab = document.querySelector(".time-lab");
+            if (new URLSearchParams(window.location.search).has("time")) {
+                timeLab.classList.add("is-visible");
+            }
+            const timeLabToggle = document.querySelector(".time-lab-toggle");
+            const previewButtons = document.querySelectorAll("[data-preview]");
+            const dayButtons = document.querySelectorAll(".time-lab-days [data-day]");
+            const resetButton = document.querySelector("[data-reset]");
+
+            const applyPreview = () => {
+                markCurrentCell();
+                placeDrawer();
+                renderPreviewControls();
+            };
+
+            const renderPreviewControls = () => {
+                const realDay = new Date().getDay();
+                dayButtons.forEach((button) => {
+                    const day = Number(button.dataset.day);
+                    const selected = previewDay === null ? day === realDay : day === previewDay;
+                    button.classList.toggle("is-selected", selected);
+                });
+                previewButtons.forEach((button) => {
+                    const selected = previewMinutes === toMinutes(button.dataset.preview);
+                    button.classList.toggle("is-selected", selected);
+                });
+                resetButton.classList.toggle("is-selected", previewDay === null && previewMinutes === null);
+
+                if (previewDay === null && previewMinutes === null) {
+                    timeLabToggle.textContent = "Laiks";
+                    return;
+                }
+
+                const dayLabel = dayLabels[activeWeekday()] ?? "";
+                const timeLabel = previewMinutes === null
+                    ? ""
+                    : [...previewButtons].find((button) => previewMinutes === toMinutes(button.dataset.preview))?.dataset.preview;
+                timeLabToggle.textContent = [dayLabel, timeLabel].filter(Boolean).join(" · ");
+            };
+
+            timeLabToggle.addEventListener("click", () => {
+                const isOpen = timeLab.classList.toggle("is-open");
+                timeLabToggle.setAttribute("aria-expanded", String(isOpen));
+            });
+
+            resetButton.addEventListener("click", () => {
+                previewDay = null;
+                previewMinutes = null;
+                applyPreview();
+            });
+
+            dayButtons.forEach((button) => {
+                button.addEventListener("click", () => {
+                    previewDay = Number(button.dataset.day);
+                    applyPreview();
+                });
+            });
+
+            previewButtons.forEach((button) => {
+                button.addEventListener("click", () => {
+                    previewMinutes = toMinutes(button.dataset.preview);
+                    applyPreview();
+                });
+            });
+
+            renderPreviewControls();
+        </script>
+    </body>
+</html>
