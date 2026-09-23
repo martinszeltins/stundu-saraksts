@@ -204,6 +204,8 @@
                 justify-content: center;
                 gap: 18px;
                 --drawer-tuck: 36px;
+                /* The visible strip is only ~68px wide, so the percentage floor from the script alone is too thin to see. */
+                --drawer-min-fill: 9px;
                 margin: var(--schedule-header, 72px) 0 0 -36px;
                 padding: 28px 18px 28px 52px;
                 border: 1px solid var(--glass-border);
@@ -222,8 +224,8 @@
                     to right,
                     var(--now-track) var(--drawer-tuck),
                     var(--now-fill) var(--drawer-tuck),
-                    var(--now-fill) calc(var(--drawer-tuck) + (100% - var(--drawer-tuck)) * var(--progress-ratio, 0)),
-                    var(--now-track) calc(var(--drawer-tuck) + (100% - var(--drawer-tuck)) * var(--progress-ratio, 0))
+                    var(--now-fill) calc(var(--drawer-tuck) + max(var(--drawer-min-fill), (100% - var(--drawer-tuck)) * var(--progress-ratio, 0))),
+                    var(--now-track) calc(var(--drawer-tuck) + max(var(--drawer-min-fill), (100% - var(--drawer-tuck)) * var(--progress-ratio, 0)))
                 );
                 border-color: var(--now-line);
                 border-left-color: transparent;
@@ -1228,7 +1230,15 @@
                 <button type="button" data-preview="10:45">3 · 10:45</button>
                 <button type="button" data-preview="11:20">4 · 11:20</button>
                 <button type="button" data-preview="12:10">5 · 12:10</button>
+                <button type="button" data-preview="11:50">5 · 11:50</button>
+                <button type="button" data-preview="11:51">5 · 11:51</button>
                 <button type="button" data-preview="12:45">6 · 12:45</button>
+                <button type="button" data-preview="9:15">Starpbrīdis · 9:15</button>
+                <button type="button" data-preview="10:05">Starpbrīdis · 10:05</button>
+                <button type="button" data-preview="10:55">Starpbrīdis · 10:55</button>
+                <button type="button" data-preview="11:48">Starpbrīdis · 11:48</button>
+                <button type="button" data-preview="12:39">Starpbrīdis · 12:39</button>
+                <button type="button" data-preview="13:20">Grupa · 13:20</button>
                 <button type="button" data-preview="15:00">Grupa · 15:00</button>
                 <button type="button" data-preview="16:30">Beidzas · 16:30</button>
             </div>
@@ -1290,6 +1300,37 @@
             let previewMinutes = null;
             let previewDay = null;
 
+            // The preview lives in the query string so a reload keeps the chosen day and time.
+            const previewParams = new URLSearchParams(window.location.search);
+            const previewTimeParam = previewParams.get("time");
+            const previewDayParam = Number(previewParams.get("day"));
+
+            if (previewTimeParam?.includes(":")) {
+                previewMinutes = toMinutes(previewTimeParam);
+            }
+
+            if (previewDayParam >= 1 && previewDayParam <= 5) {
+                previewDay = previewDayParam;
+            }
+
+            const toTimeLabel = (minutes) => `${Math.floor(minutes / 60)}:${String(minutes % 60).padStart(2, "0")}`;
+
+            const storePreview = () => {
+                const params = new URLSearchParams(window.location.search);
+                params.set("time", previewMinutes === null ? "1" : toTimeLabel(previewMinutes));
+                if (previewDay === null) {
+                    params.delete("day");
+                } else {
+                    params.set("day", String(previewDay));
+                }
+
+                try {
+                    history.replaceState(null, "", `${window.location.pathname}?${params}`);
+                } catch {
+                    // Browsers block history updates on file:// pages; the preview then lasts for this page view only.
+                }
+            };
+
             const dayLabels = {
                 1: "Pir",
                 2: "Otr",
@@ -1311,6 +1352,24 @@
                     return previewDay;
                 }
                 return new Date().getDay();
+            };
+
+            // Progress bars keep a visible sliver at both ends: anything just started already shows some fill,
+            // and a finished lesson still shows some track during the break.
+            const minProgressPercent = 5;
+            const maxProgressPercent = 95;
+
+            const activePeriod = (minutesNow) => {
+                for (let period = 0; period < lessonPeriods.length; period += 1) {
+                    const [start, end] = lessonPeriods[period];
+                    if (minutesNow < toMinutes(start)) {
+                        return period - 1;
+                    }
+                    if (minutesNow < toMinutes(end)) {
+                        return period;
+                    }
+                }
+                return -1;
             };
 
             const progressPercent = (start, end, now) => {
@@ -1357,7 +1416,7 @@
                 drawer.classList.toggle("is-now", extendedGroupIsNow);
                 drawer.classList.toggle("is-ending", extendedGroupIsEnding);
                 if (extendedGroupIsNow) {
-                    applyProgress(drawer, progressPercent(extendedStart, extendedEnd, minutesNow));
+                    applyProgress(drawer, Math.max(minProgressPercent, progressPercent(extendedStart, extendedEnd, minutesNow)));
                 }
 
                 if (!todayRow) {
@@ -1366,9 +1425,7 @@
 
                 todayRow.classList.add("is-today");
 
-                const currentPeriod = lessonPeriods.findIndex(([start, end]) => {
-                    return minutesNow >= toMinutes(start) && minutesNow < toMinutes(end);
-                });
+                const currentPeriod = activePeriod(minutesNow);
 
                 if (currentPeriod < 0) {
                     return;
@@ -1378,9 +1435,12 @@
                     const firstPeriod = Number(cell.dataset.firstPeriod);
                     const lastPeriod = Number(cell.dataset.lastPeriod);
                     if (currentPeriod >= firstPeriod && currentPeriod <= lastPeriod) {
-                        const [start, end] = lessonPeriods[currentPeriod];
+                        // A cell covering several periods fills across its whole range, breaks inside it included.
+                        const cellStart = toMinutes(lessonPeriods[firstPeriod][0]);
+                        const cellEnd = toMinutes(lessonPeriods[lastPeriod][1]);
+                        const cellProgress = progressPercent(cellStart, cellEnd, minutesNow);
                         cell.classList.add("is-now");
-                        applyProgress(cell, progressPercent(toMinutes(start), toMinutes(end), minutesNow));
+                        applyProgress(cell, Math.min(maxProgressPercent, Math.max(minProgressPercent, cellProgress)));
                     }
                 }
             };
@@ -1449,7 +1509,7 @@
             });
 
             const timeLab = document.querySelector(".time-lab");
-            if (new URLSearchParams(window.location.search).has("time")) {
+            if (previewParams.has("time") || previewParams.has("day")) {
                 timeLab.classList.add("is-visible");
             }
             const timeLabToggle = document.querySelector(".time-lab-toggle");
@@ -1458,6 +1518,7 @@
             const resetButton = document.querySelector("[data-reset]");
 
             const applyPreview = () => {
+                storePreview();
                 markCurrentCell();
                 placeDrawer();
                 scrollToToday();
